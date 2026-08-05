@@ -57,17 +57,25 @@
       align-items: center;
       justify-content: space-between;
       height: 100%;
+      position: relative;
     }
-    /* Brand block: HP logo + stars + name — all left */
-    .navbar-brand {
+    /* Left: HP logo always */
+    .navbar-left {
       display: flex;
       align-items: center;
       gap: 8px;
-      text-decoration: none;
       flex-shrink: 0;
+      z-index: 1;
+    }
+    .navbar-logo { display: flex; align-items: center; text-decoration: none; }
+    /* Stars + name: inline on mobile, absolutely centered on desktop */
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
       white-space: nowrap;
     }
-    .navbar-logo { flex-shrink: 0; display: flex; align-items: center; }
     .navbar-brand-stars {
       font-size: 9px;
       color: var(--gold);
@@ -80,7 +88,17 @@
       text-transform: uppercase;
       color: var(--black);
     }
+    /* Mobile: show inline brand, hide desktop brand */
+    .navbar-brand-desktop { display: none; }
+    .navbar-brand-mobile  { display: flex; }
     @media (min-width: 961px) {
+      .navbar-brand-mobile  { display: none; }
+      .navbar-brand-desktop {
+        display: flex;
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+      }
       .navbar-brand-name { font-size: 16px; }
     }
     /* Right side: links + btn + hamburger */
@@ -89,6 +107,7 @@
       align-items: center;
       gap: clamp(10px, 1.2vw, 20px);
       flex-shrink: 0;
+      z-index: 1;
     }
     .navbar-links {
       display: flex;
@@ -954,9 +973,9 @@
   <!-- ── Navbar ───────────────────────────────────────────────── -->
   <nav class="navbar">
     <div class="navbar-inner">
-      <!-- Brand: HP logo | stars | Hotel Paganini — left -->
-      <a href="#home" class="navbar-brand" data-section="home">
-        <span class="navbar-logo">
+      <!-- Left: HP logo -->
+      <div class="navbar-left">
+        <a href="#home" class="navbar-logo" data-section="home">
           <svg width="30" height="36" viewBox="0 0 34 40" fill="none" xmlns="http://www.w3.org/2000/svg">
             <line x1="1" y1="4.5" x2="33" y2="4.5" stroke="#9a7c3f" stroke-width="0.8"/>
             <line x1="1" y1="5.5" x2="33" y2="5.5" stroke="#9a7c3f" stroke-width="0.3"/>
@@ -964,7 +983,16 @@
             <line x1="1" y1="38.5" x2="33" y2="38.5" stroke="#9a7c3f" stroke-width="0.3"/>
             <line x1="1" y1="39.5" x2="33" y2="39.5" stroke="#9a7c3f" stroke-width="0.8"/>
           </svg>
-        </span>
+        </a>
+        <!-- Mobile: stars + name inline next to logo -->
+        <a href="#home" class="navbar-brand navbar-brand-mobile" data-section="home">
+          <span class="navbar-brand-stars">★ ★ ★</span>
+          <span class="navbar-brand-name">Hotel Paganini</span>
+        </a>
+      </div>
+
+      <!-- Desktop: stars + name absolutely centered -->
+      <a href="#home" class="navbar-brand navbar-brand-desktop" data-section="home">
         <span class="navbar-brand-stars">★ ★ ★</span>
         <span class="navbar-brand-name">Hotel Paganini</span>
       </a>
