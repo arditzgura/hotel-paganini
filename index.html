@@ -59,28 +59,32 @@
       height: 100%;
       position: relative;
     }
+    /* HP monogram — fixed left */
+    .navbar-logo {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+      flex-shrink: 0;
+      z-index: 1;
+    }
+    /* Name + stars — absolutely centered */
     .navbar-brand {
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
       display: flex;
-      align-items: center;
-      gap: 10px;
-      text-decoration: none;
-      flex-shrink: 0;
-    }
-    .navbar-brand-logo { flex-shrink: 0; }
-    .navbar-brand-text {
-      display: flex;
       flex-direction: column;
-      align-items: flex-start;
-      line-height: 1.2;
+      align-items: center;
+      text-decoration: none;
+      white-space: nowrap;
+      pointer-events: auto;
     }
     .navbar-brand-stars {
       font-size: 8px;
       color: var(--gold);
-      letter-spacing: 3px;
-      margin-bottom: 1px;
+      letter-spacing: 4px;
+      line-height: 1;
+      margin-bottom: 2px;
     }
     .navbar-brand-name {
       font-size: clamp(10px, 0.85vw, 12px);
@@ -88,9 +92,15 @@
       letter-spacing: 2.5px;
       text-transform: uppercase;
       color: var(--black);
+      line-height: 1;
     }
-    .navbar-links {
-      gap: clamp(10px, 1.6vw, 26px);
+    /* Right side: links + btn + hamburger */
+    .navbar-right {
+      display: flex;
+      align-items: center;
+      gap: clamp(10px, 1.2vw, 20px);
+      flex-shrink: 0;
+      z-index: 1;
     }
     .navbar-links {
       display: flex;
@@ -956,8 +966,9 @@
   <!-- ── Navbar ───────────────────────────────────────────────── -->
   <nav class="navbar">
     <div class="navbar-inner">
-      <a href="#home" class="navbar-brand" data-section="home">
-        <svg class="navbar-brand-logo" width="34" height="40" viewBox="0 0 34 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- HP monogram — left -->
+      <a href="#home" class="navbar-logo" data-section="home">
+        <svg width="34" height="40" viewBox="0 0 34 40" fill="none" xmlns="http://www.w3.org/2000/svg">
           <line x1="1" y1="4.5" x2="33" y2="4.5" stroke="#9a7c3f" stroke-width="0.8"/>
           <line x1="1" y1="5.5" x2="33" y2="5.5" stroke="#9a7c3f" stroke-width="0.3"/>
           <text x="17" y="26" text-anchor="middle" font-family="Georgia,serif" font-size="19" font-style="italic" font-weight="400" fill="#9a7c3f">HP</text>
@@ -965,23 +976,29 @@
           <line x1="1" y1="38.5" x2="33" y2="38.5" stroke="#9a7c3f" stroke-width="0.3"/>
           <line x1="1" y1="39.5" x2="33" y2="39.5" stroke="#9a7c3f" stroke-width="0.8"/>
         </svg>
-        <div class="navbar-brand-text">
-          <span class="navbar-brand-stars">★ ★ ★ ★</span>
-          <span class="navbar-brand-name">Hotel Paganini</span>
-        </div>
       </a>
-      <ul class="navbar-links">
-        <li><a href="#home"     data-section="home">Hotel</a></li>
-        <li><a href="#rooms"    data-section="rooms">Camere</a></li>
-        <li><a href="#services" data-section="services">Servizi</a></li>
-        <li><a href="#galleria" data-section="galleria">Galleria</a></li>
-        <li><a href="#contact"  data-section="contact">Dove Siamo</a></li>
-        <li><a href="#contact"  data-section="contact">Contattaci</a></li>
-      </ul>
-      <a href="#contact" class="navbar-btn">Prenota</a>
-      <button class="hamburger" aria-label="Menu">
-        <span></span><span></span><span></span>
-      </button>
+
+      <!-- Name + stars — centered -->
+      <a href="#home" class="navbar-brand" data-section="home">
+        <span class="navbar-brand-stars">★ ★ ★</span>
+        <span class="navbar-brand-name">Hotel Paganini</span>
+      </a>
+
+      <!-- Right: links + btn + hamburger -->
+      <div class="navbar-right">
+        <ul class="navbar-links">
+          <li><a href="#home"     data-section="home">Hotel</a></li>
+          <li><a href="#rooms"    data-section="rooms">Camere</a></li>
+          <li><a href="#services" data-section="services">Servizi</a></li>
+          <li><a href="#galleria" data-section="galleria">Galleria</a></li>
+          <li><a href="#contact"  data-section="contact">Dove Siamo</a></li>
+          <li><a href="#contact"  data-section="contact">Contattaci</a></li>
+        </ul>
+        <a href="#contact" class="navbar-btn">Prenota</a>
+        <button class="hamburger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
     </div>
   </nav>
 
