@@ -537,6 +537,36 @@
       .lb-room-name { font-size: 12px; }
     }
 
+    /* ── Gallery ─────────────────────────────────────────────── */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: clamp(6px, 1vw, 12px);
+    }
+    .gallery-item {
+      aspect-ratio: 4/3;
+      overflow: hidden;
+      border-radius: 4px;
+      cursor: pointer;
+      position: relative;
+      background: var(--surface-gray);
+    }
+    .gallery-item img {
+      width: 100%; height: 100%;
+      object-fit: cover; display: block;
+      transition: transform 0.4s ease;
+    }
+    .gallery-item:hover img { transform: scale(1.05); }
+    .gallery-item:nth-child(5n+1) { grid-column: span 2; aspect-ratio: 16/9; }
+    @media (max-width: 960px) {
+      .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+      .gallery-item:nth-child(5n+1) { grid-column: span 2; }
+    }
+    @media (max-width: 500px) {
+      .gallery-grid { grid-template-columns: 1fr 1fr; }
+      .gallery-item:nth-child(5n+1) { grid-column: span 2; aspect-ratio: 4/3; }
+    }
+
     /* ── Admin multi-photo styles ────────────────────────────── */
     .adm-photo-list { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
     .adm-photo-row { display: flex; gap: 6px; align-items: center; }
@@ -938,7 +968,7 @@
         <li><a href="#home"     data-section="home">Hotel</a></li>
         <li><a href="#rooms"    data-section="rooms">Camere</a></li>
         <li><a href="#services" data-section="services">Servizi</a></li>
-        <li><a href="#rooms"    data-section="rooms">Galleria</a></li>
+        <li><a href="#galleria" data-section="galleria">Galleria</a></li>
         <li><a href="#contact"  data-section="contact">Dove Siamo</a></li>
         <li><a href="#contact"  data-section="contact">Contattaci</a></li>
       </ul>
@@ -954,7 +984,7 @@
     <a href="#home"     data-section="home">Hotel</a>
     <a href="#rooms"    data-section="rooms">Camere</a>
     <a href="#services" data-section="services">Servizi</a>
-    <a href="#rooms"    data-section="rooms">Galleria</a>
+    <a href="#galleria" data-section="galleria">Galleria</a>
     <a href="#contact"  data-section="contact">Dove Siamo</a>
     <a href="#contact"  data-section="contact">Contattaci</a>
   </div>
@@ -1024,6 +1054,18 @@
     </div>
     <div class="rooms-grid" id="rooms-grid">
       <!-- Populated by JS cmsRenderRooms() -->
+    </div>
+  </section>
+
+  <!-- ── Galleria ─────────────────────────────────────────────── -->
+  <section class="section" id="galleria">
+    <div class="section-header">
+      <p class="section-eyebrow" id="cms-gl-eyebrow">La Nostra Galleria</p>
+      <h2 class="section-title" id="cms-gl-title">Galleria Fotografica</h2>
+      <p class="section-desc" id="cms-gl-desc">Scopri gli spazi e l'atmosfera unica del nostro hotel.</p>
+    </div>
+    <div class="gallery-grid" id="gallery-grid">
+      <!-- Populated by JS cmsRenderGallery() -->
     </div>
   </section>
 
@@ -1171,19 +1213,27 @@
         </div>
         <div class="adm-nav-link" data-admpanel="hero" onclick="admShowPanel(this)">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg>
-          Hero
-        </div>
-        <div class="adm-nav-link" data-admpanel="services" onclick="admShowPanel(this)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
-          Servizi
+          Hotel
         </div>
         <div class="adm-nav-link" data-admpanel="rooms" onclick="admShowPanel(this)">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
           Camere
         </div>
-        <div class="adm-nav-link" data-admpanel="contact" onclick="admShowPanel(this)">
+        <div class="adm-nav-link" data-admpanel="services" onclick="admShowPanel(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+          Servizi
+        </div>
+        <div class="adm-nav-link" data-admpanel="galleria" onclick="admShowPanel(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          Galleria
+        </div>
+        <div class="adm-nav-link" data-admpanel="dovesiamo" onclick="admShowPanel(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Dove Siamo
+        </div>
+        <div class="adm-nav-link" data-admpanel="contattaci" onclick="admShowPanel(this)">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.77 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-          Contatti
+          Contattaci
         </div>
         <div class="adm-sidebar-footer">
           <span class="adm-user">admin</span>
@@ -1286,23 +1336,56 @@
           </div>
         </div>
 
-        <!-- Contact -->
-        <div class="adm-panel" id="adm-panel-contact">
+        <!-- Galleria -->
+        <div class="adm-panel" id="adm-panel-galleria">
           <div class="adm-card">
-            <div class="adm-card-title">Dettagli di Contatto</div>
+            <div class="adm-card-title">Intestazione Sezione</div>
+            <div class="adm-grid">
+              <div class="adm-field"><label for="adm_gl_eyebrow">Occhiello</label><input class="adm-input" id="adm_gl_eyebrow" type="text" /></div>
+              <div class="adm-field"><label for="adm_gl_title">Titolo</label><input class="adm-input" id="adm_gl_title" type="text" /></div>
+              <div class="adm-field full"><label for="adm_gl_desc">Descrizione</label><textarea class="adm-textarea" id="adm_gl_desc"></textarea></div>
+            </div>
+          </div>
+          <div id="adm-gl-photos"></div>
+          <div class="adm-card" style="margin-top:0;">
+            <button type="button" class="adm-btn-add-room" onclick="admAddGalleryPhoto()">+ Aggiungi Foto</button>
+            <div class="adm-save-bar" style="border-top:none;padding-top:0;margin-top:8px;">
+              <span class="adm-save-msg" id="adm-saved-galleria">Salvato!</span>
+              <button class="adm-btn-save" onclick="admSave('galleria')">Salva</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dove Siamo -->
+        <div class="adm-panel" id="adm-panel-dovesiamo">
+          <div class="adm-card">
+            <div class="adm-card-title">Informazioni di Localizzazione</div>
+            <div class="adm-grid">
+              <div class="adm-field full"><label for="adm_ds_address">Indirizzo</label><input class="adm-input" id="adm_ds_address" type="text" /></div>
+              <div class="adm-field"><label for="adm_ds_phone">Telefono</label><input class="adm-input" id="adm_ds_phone" type="text" /></div>
+              <div class="adm-field"><label for="adm_ds_email">Email</label><input class="adm-input" id="adm_ds_email" type="text" /></div>
+              <div class="adm-field"><label for="adm_ds_checkin">Check-in</label><input class="adm-input" id="adm_ds_checkin" type="text" /></div>
+              <div class="adm-field"><label for="adm_ds_checkout">Check-out</label><input class="adm-input" id="adm_ds_checkout" type="text" /></div>
+            </div>
+            <div class="adm-save-bar">
+              <span class="adm-save-msg" id="adm-saved-dovesiamo">Salvato!</span>
+              <button class="adm-btn-save" onclick="admSave('dovesiamo')">Salva</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contattaci -->
+        <div class="adm-panel" id="adm-panel-contattaci">
+          <div class="adm-card">
+            <div class="adm-card-title">Intestazione Modulo di Contatto</div>
             <div class="adm-grid">
               <div class="adm-field"><label for="adm_ct_eyebrow">Occhiello</label><input class="adm-input" id="adm_ct_eyebrow" type="text" /></div>
               <div class="adm-field"><label for="adm_ct_title">Titolo</label><input class="adm-input" id="adm_ct_title" type="text" /></div>
               <div class="adm-field full"><label for="adm_ct_desc">Descrizione</label><textarea class="adm-textarea" id="adm_ct_desc"></textarea></div>
-              <div class="adm-field full"><label for="adm_ct_address">Indirizzo</label><input class="adm-input" id="adm_ct_address" type="text" /></div>
-              <div class="adm-field"><label for="adm_ct_phone">Telefono</label><input class="adm-input" id="adm_ct_phone" type="text" /></div>
-              <div class="adm-field"><label for="adm_ct_email">Email</label><input class="adm-input" id="adm_ct_email" type="text" /></div>
-              <div class="adm-field"><label for="adm_ct_checkin">Check-in</label><input class="adm-input" id="adm_ct_checkin" type="text" /></div>
-              <div class="adm-field"><label for="adm_ct_checkout">Check-out</label><input class="adm-input" id="adm_ct_checkout" type="text" /></div>
             </div>
             <div class="adm-save-bar">
-              <span class="adm-save-msg" id="adm-saved-contact">Salvato!</span>
-              <button class="adm-btn-save" onclick="admSave('contact')">Salva</button>
+              <span class="adm-save-msg" id="adm-saved-contattaci">Salvato!</span>
+              <button class="adm-btn-save" onclick="admSave('contattaci')">Salva</button>
             </div>
           </div>
         </div>
@@ -1344,7 +1427,7 @@
       });
     }, { rootMargin: '-40% 0px -55% 0px' });
 
-    ['home', 'services', 'rooms', 'contact'].forEach(id => {
+    ['home', 'services', 'rooms', 'galleria', 'contact'].forEach(id => {
       const el = document.getElementById(id);
       if (el) observer.observe(el);
     });
@@ -1392,10 +1475,10 @@
     const _lb = document.getElementById('lightbox');
     const _lbImgWrap = _lb.querySelector('.lb-img-wrap');
 
-    function lbOpen(photos, name) {
+    function lbOpen(photos, name, startIdx) {
       const valid = photos.filter(Boolean);
       if (!valid.length) return;
-      _lbPhotos = valid; _lbIdx = 0;
+      _lbPhotos = valid; _lbIdx = (startIdx || 0);
       _lbUpdate(name);
       _lb.classList.add('open');
       // iOS: prevent body scroll without breaking lightbox scroll
@@ -1525,6 +1608,11 @@
       address:'Via Paganini 12, Milano, Italia',
       phone:'+39 02 1234 5678', email:'info@hotelpaganini.it',
       checkin:'15:00', checkout:'11:00',
+    },
+    galleria: {
+      eyebrow:'La Nostra Galleria', title:'Galleria Fotografica',
+      desc:"Scopri gli spazi e l'atmosfera unica del nostro hotel.",
+      photos: [],
     }
   };
 
@@ -1633,6 +1721,30 @@
       cmsSet('cms-ct-address', ct.address); cmsSet('cms-ct-phone', ct.phone); cmsSet('cms-ct-email', ct.email);
       cmsSet('cms-ct-times', (ct.checkin || '3:00 PM') + ' — ' + (ct.checkout || '12:00 PM'));
     }
+    const gl = data.galleria;
+    if (gl) {
+      cmsSet('cms-gl-eyebrow', gl.eyebrow); cmsSet('cms-gl-title', gl.title); cmsSet('cms-gl-desc', gl.desc);
+      cmsRenderGallery(gl.photos || []);
+    }
+  }
+
+  // Gallery photo registry
+  let _galleryPhotos = [];
+  function cmsRenderGallery(photos) {
+    const grid = document.getElementById('gallery-grid');
+    if (!grid) return;
+    _galleryPhotos = photos.filter(Boolean);
+    if (!_galleryPhotos.length) { grid.innerHTML = ''; return; }
+    grid.innerHTML = _galleryPhotos.map((url, i) =>
+      `<div class="gallery-item" onclick="lbOpenGallery(${i})" tabindex="0"
+            onkeydown="if(event.key==='Enter')lbOpenGallery(${i})"
+            role="button" aria-label="Foto ${i+1}">
+         <img src="${esc(url)}" alt="Galleria foto ${i+1}" loading="lazy" />
+       </div>`
+    ).join('');
+  }
+  function lbOpenGallery(i) {
+    if (_galleryPhotos.length) lbOpen(_galleryPhotos, 'Galleria', i);
   }
 
   // ── Render rooms grid on the live page ──
@@ -1738,11 +1850,13 @@
 
   // ── Panel navigation ──
   const ADM_PANEL_META = {
-    overview: { title:'Panoramica', sub:'Gestisci i contenuti della pagina.' },
-    hero:     { title:'Hero',       sub:"Modifica l'immagine principale, il titolo e il sottotitolo." },
-    services: { title:'Servizi',    sub:'Aggiorna le tre card dei servizi.' },
-    rooms:    { title:'Camere',     sub:'Modifica nomi, prezzi e foto delle camere.' },
-    contact:  { title:'Contatti',   sub:'Aggiorna indirizzo, telefono, email e orari.' },
+    overview:   { title:'Panoramica',  sub:'Gestisci i contenuti della pagina.' },
+    hero:       { title:'Hotel',       sub:"Modifica l'immagine principale, il titolo e il sottotitolo." },
+    rooms:      { title:'Camere',      sub:'Modifica nomi, prezzi e foto delle camere.' },
+    services:   { title:'Servizi',     sub:'Aggiorna le tre card dei servizi.' },
+    galleria:   { title:'Galleria',    sub:'Gestisci le foto della galleria fotografica.' },
+    dovesiamo:  { title:'Dove Siamo',  sub:'Aggiorna indirizzo, telefono, email e orari.' },
+    contattaci: { title:'Contattaci',  sub:'Modifica il titolo e il testo del modulo di contatto.' },
   };
   function admShowPanel(link) {
     document.querySelectorAll('.adm-nav-link').forEach(l => l.classList.remove('active'));
@@ -1966,11 +2080,17 @@
     document.getElementById('adm_ct_eyebrow').value  = ct.eyebrow;
     document.getElementById('adm_ct_title').value    = ct.title;
     document.getElementById('adm_ct_desc').value     = ct.desc;
-    document.getElementById('adm_ct_address').value  = ct.address;
-    document.getElementById('adm_ct_phone').value    = ct.phone;
-    document.getElementById('adm_ct_email').value    = ct.email;
-    document.getElementById('adm_ct_checkin').value  = ct.checkin;
-    document.getElementById('adm_ct_checkout').value = ct.checkout;
+    document.getElementById('adm_ds_address').value  = ct.address;
+    document.getElementById('adm_ds_phone').value    = ct.phone;
+    document.getElementById('adm_ds_email').value    = ct.email;
+    document.getElementById('adm_ds_checkin').value  = ct.checkin;
+    document.getElementById('adm_ds_checkout').value = ct.checkout;
+
+    const gl = admGet('galleria');
+    document.getElementById('adm_gl_eyebrow').value = gl.eyebrow;
+    document.getElementById('adm_gl_title').value   = gl.title;
+    document.getElementById('adm_gl_desc').value    = gl.desc;
+    admRenderGalleryAdmin(gl.photos || []);
 
     const ls = localStorage.getItem('hv_saved');
     if (ls) document.getElementById('admLastSaved').textContent = ls;
@@ -2015,16 +2135,26 @@
         }))
       };
     }
-    if (section === 'contact') {
+    if (section === 'dovesiamo' || section === 'contattaci') {
+      const prev = data.contact || {};
       data.contact = {
         eyebrow:  document.getElementById('adm_ct_eyebrow').value,
         title:    document.getElementById('adm_ct_title').value,
         desc:     document.getElementById('adm_ct_desc').value,
-        address:  document.getElementById('adm_ct_address').value,
-        phone:    document.getElementById('adm_ct_phone').value,
-        email:    document.getElementById('adm_ct_email').value,
-        checkin:  document.getElementById('adm_ct_checkin').value,
-        checkout: document.getElementById('adm_ct_checkout').value,
+        address:  document.getElementById('adm_ds_address').value,
+        phone:    document.getElementById('adm_ds_phone').value,
+        email:    document.getElementById('adm_ds_email').value,
+        checkin:  document.getElementById('adm_ds_checkin').value,
+        checkout: document.getElementById('adm_ds_checkout').value,
+      };
+    }
+    if (section === 'galleria') {
+      admCollectGallery();
+      data.galleria = {
+        eyebrow: document.getElementById('adm_gl_eyebrow').value,
+        title:   document.getElementById('adm_gl_title').value,
+        desc:    document.getElementById('adm_gl_desc').value,
+        photos:  admGalleryData.filter(Boolean),
       };
     }
 
@@ -2050,6 +2180,74 @@
     // Update timestamp in overview
     const ls = localStorage.getItem('hv_saved');
     if (ls) document.getElementById('admLastSaved').textContent = ls;
+  }
+
+  // ── Gallery admin ──
+  let admGalleryData = [];
+
+  function admRenderGalleryAdmin(photos) {
+    admGalleryData = photos.slice();
+    const wrap = document.getElementById('adm-gl-photos');
+    if (!wrap) return;
+    wrap.innerHTML = admGalleryData.map((url, j) => `
+      <div class="adm-card adm-room-card" style="margin-top:0;">
+        <div class="adm-room-header">
+          <span style="font-size:12px;font-weight:600;color:var(--muted)">Foto ${j+1}</span>
+          <button type="button" class="adm-btn-del-room" onclick="admDeleteGalleryPhoto(${j})">✕ Rimuovi</button>
+        </div>
+        <div class="adm-field full">
+          <label>URL Immagine</label>
+          <div class="adm-img-row">
+            <input class="adm-input" id="adm_gl_photo_${j}" type="text" value="${esc(url)}"
+                   placeholder="Incolla URL o carica…"
+                   oninput="admPreviewImg('adm_gl_photo_${j}','adm_gl_photo_p_${j}')" />
+            <button type="button" class="adm-btn-upload" onclick="admTriggerUpload('adm_gl_photo_f_${j}')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Carica
+            </button>
+            <input class="adm-file-hidden" type="file" id="adm_gl_photo_f_${j}" accept="image/*"
+                   onchange="admHandleGalleryPhotoUpload(this,${j})" />
+          </div>
+          <img class="adm-img-preview" id="adm_gl_photo_p_${j}" src="${esc(url)}" alt="" />
+        </div>
+      </div>`).join('');
+  }
+
+  function admCollectGallery() {
+    admGalleryData = admGalleryData.map((_, j) =>
+      document.getElementById(`adm_gl_photo_${j}`)?.value ?? ''
+    );
+  }
+
+  function admAddGalleryPhoto() {
+    admCollectGallery();
+    admGalleryData.push('');
+    admRenderGalleryAdmin(admGalleryData);
+  }
+
+  function admDeleteGalleryPhoto(j) {
+    admCollectGallery();
+    admGalleryData.splice(j, 1);
+    admRenderGalleryAdmin(admGalleryData);
+  }
+
+  async function admHandleGalleryPhotoUpload(input, j) {
+    const file = input.files[0]; if (!file) return;
+    const previewEl = document.getElementById(`adm_gl_photo_p_${j}`);
+    const inputEl   = document.getElementById(`adm_gl_photo_${j}`);
+    const tmp = URL.createObjectURL(file);
+    if (previewEl) previewEl.src = tmp;
+    const blob = await admCompress(file);
+    const path = `hotel/gallery-${j}-${Date.now()}.jpg`;
+    const publicUrl = await hvUploadImg(new File([blob], path, {type:'image/jpeg'}), path);
+    URL.revokeObjectURL(tmp);
+    const finalUrl = publicUrl || await new Promise(r => {
+      const fr = new FileReader(); fr.onload = e => r(e.target.result); fr.readAsDataURL(blob);
+    });
+    if (inputEl) inputEl.value = finalUrl;
+    if (previewEl) previewEl.src = finalUrl;
+    admCollectGallery();
+    admGalleryData[j] = finalUrl;
   }
 
   function admInitDash() {
