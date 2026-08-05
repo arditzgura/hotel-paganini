@@ -651,6 +651,14 @@
     .contact-section .section-eyebrow { color: var(--gold-light); }
     .contact-section .section-title { color: var(--white); }
     .contact-section .section-desc { color: rgba(255,255,255,0.5); }
+    .contact-map-wrap {
+      width: 100%;
+      height: clamp(260px, 38vh, 420px);
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: clamp(32px, 4vw, 56px);
+    }
+    .contact-map { display: block; width: 100%; height: 100%; border: 0; }
     .contact-inner {
       display: grid;
       grid-template-columns: 1fr 1.2fr;
@@ -658,6 +666,13 @@
       align-items: start;
     }
     .contact-info { display: flex; flex-direction: column; gap: clamp(20px, 2.5vw, 32px); }
+    .contact-address-link {
+      text-decoration: underline;
+      text-decoration-color: rgba(255,255,255,0.25);
+      text-underline-offset: 3px;
+      transition: color 0.2s, text-decoration-color 0.2s;
+    }
+    .contact-address-link:hover { color: var(--gold-light); text-decoration-color: var(--gold-light); }
     .contact-detail {
       display: flex;
       flex-direction: column;
@@ -674,6 +689,7 @@
       font-size: clamp(13px, 1vw, 15px);
       font-weight: 300;
       color: rgba(255,255,255,0.8);
+      text-decoration: none;
     }
     .contact-form {
       display: grid;
@@ -1006,8 +1022,6 @@
           <li><a href="#home"     data-section="home">Hotel</a></li>
           <li><a href="#rooms"    data-section="rooms">Camere</a></li>
           <li><a href="#services" data-section="services">Servizi</a></li>
-          <li><a href="#galleria" data-section="galleria">Galleria</a></li>
-          <li><a href="#contact"  data-section="contact">Dove Siamo</a></li>
           <li><a href="#contact"  data-section="contact">Contattaci</a></li>
         </ul>
         <a href="#contact" class="navbar-btn">Prenota</a>
@@ -1023,8 +1037,6 @@
     <a href="#home"     data-section="home">Hotel</a>
     <a href="#rooms"    data-section="rooms">Camere</a>
     <a href="#services" data-section="services">Servizi</a>
-    <a href="#galleria" data-section="galleria">Galleria</a>
-    <a href="#contact"  data-section="contact">Dove Siamo</a>
     <a href="#contact"  data-section="contact">Contattaci</a>
   </div>
 
@@ -1115,20 +1127,28 @@
       <h2 class="section-title" id="cms-ct-title">Prenota il Tuo Soggiorno</h2>
       <p class="section-desc" id="cms-ct-desc">Raccontaci la tua vacanza ideale e cureremo ogni dettaglio per superare le tue aspettative.</p>
     </div>
-    <div class="contact-inner">
 
+    <!-- Google Maps embed -->
+    <div class="contact-map-wrap">
+      <iframe id="cms-ct-map" class="contact-map"
+        src="" width="100%" height="100%" style="border:0;" allowfullscreen=""
+        loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+
+    <div class="contact-inner">
       <div class="contact-info">
         <div class="contact-detail">
           <span class="contact-detail-label">Indirizzo</span>
-          <span class="contact-detail-value" id="cms-ct-address">Via Paganini 12, Milano, Italia</span>
+          <a class="contact-detail-value contact-address-link" id="cms-ct-address-link"
+             href="#" target="_blank" rel="noopener">Via Paganini 12, Milano, Italia</a>
         </div>
         <div class="contact-detail">
           <span class="contact-detail-label">Telefono</span>
-          <span class="contact-detail-value" id="cms-ct-phone">+39 02 1234 5678</span>
+          <a class="contact-detail-value" id="cms-ct-phone" href="tel:+390212345678">+39 02 1234 5678</a>
         </div>
         <div class="contact-detail">
           <span class="contact-detail-label">Email</span>
-          <span class="contact-detail-value" id="cms-ct-email">info@hotelpaganini.it</span>
+          <a class="contact-detail-value" id="cms-ct-email" href="mailto:info@hotelpaganini.it">info@hotelpaganini.it</a>
         </div>
         <div class="contact-detail">
           <span class="contact-detail-label">Check-in / Check-out</span>
@@ -1416,11 +1436,35 @@
         <!-- Contattaci -->
         <div class="adm-panel" id="adm-panel-contattaci">
           <div class="adm-card">
-            <div class="adm-card-title">Intestazione Modulo di Contatto</div>
+            <div class="adm-card-title">Intestazione Sezione</div>
             <div class="adm-grid">
               <div class="adm-field"><label for="adm_ct_eyebrow">Occhiello</label><input class="adm-input" id="adm_ct_eyebrow" type="text" /></div>
               <div class="adm-field"><label for="adm_ct_title">Titolo</label><input class="adm-input" id="adm_ct_title" type="text" /></div>
               <div class="adm-field full"><label for="adm_ct_desc">Descrizione</label><textarea class="adm-textarea" id="adm_ct_desc"></textarea></div>
+            </div>
+          </div>
+          <div class="adm-card" style="margin-top:0;">
+            <div class="adm-card-title">Google Maps</div>
+            <div class="adm-grid">
+              <div class="adm-field full">
+                <label for="adm_ct_map_embed">URL Embed (src dell'iframe)</label>
+                <input class="adm-input" id="adm_ct_map_embed" type="text" placeholder="https://www.google.com/maps/embed?pb=…" />
+                <small style="color:var(--muted);font-size:11px;margin-top:4px;display:block;">Google Maps → Condividi → Incorpora una mappa → copia solo l'URL src</small>
+              </div>
+              <div class="adm-field full">
+                <label for="adm_ct_map_link">Link cliccabile indirizzo (URL Google Maps)</label>
+                <input class="adm-input" id="adm_ct_map_link" type="text" placeholder="https://maps.google.com/?q=…" />
+              </div>
+            </div>
+          </div>
+          <div class="adm-card" style="margin-top:0;">
+            <div class="adm-card-title">Dati di Contatto</div>
+            <div class="adm-grid">
+              <div class="adm-field full"><label for="adm_ds_address">Indirizzo</label><input class="adm-input" id="adm_ds_address" type="text" /></div>
+              <div class="adm-field"><label for="adm_ds_phone">Telefono</label><input class="adm-input" id="adm_ds_phone" type="text" /></div>
+              <div class="adm-field"><label for="adm_ds_email">Email</label><input class="adm-input" id="adm_ds_email" type="text" /></div>
+              <div class="adm-field"><label for="adm_ds_checkin">Check-in</label><input class="adm-input" id="adm_ds_checkin" type="text" /></div>
+              <div class="adm-field"><label for="adm_ds_checkout">Check-out</label><input class="adm-input" id="adm_ds_checkout" type="text" /></div>
             </div>
             <div class="adm-save-bar">
               <span class="adm-save-msg" id="adm-saved-contattaci">Salvato!</span>
@@ -1645,6 +1689,8 @@
       eyebrow:'Dove Siamo', title:'Prenota il Tuo Soggiorno',
       desc:'Raccontaci la tua vacanza ideale e cureremo ogni dettaglio per superare le tue aspettative.',
       address:'Via Paganini 12, Milano, Italia',
+      mapLink:'https://maps.google.com/?q=Via+Paganini+12+Milano',
+      mapEmbed:'',
       phone:'+39 02 1234 5678', email:'info@hotelpaganini.it',
       checkin:'15:00', checkout:'11:00',
     },
@@ -1757,7 +1803,14 @@
     const ct = data.contact;
     if (ct) {
       cmsSet('cms-ct-eyebrow', ct.eyebrow); cmsSet('cms-ct-title', ct.title); cmsSet('cms-ct-desc', ct.desc);
-      cmsSet('cms-ct-address', ct.address); cmsSet('cms-ct-phone', ct.phone); cmsSet('cms-ct-email', ct.email);
+      const addrEl = document.getElementById('cms-ct-address-link');
+      if (addrEl) { addrEl.textContent = ct.address; addrEl.href = ct.mapLink || '#'; }
+      const phoneEl = document.getElementById('cms-ct-phone');
+      if (phoneEl) { phoneEl.textContent = ct.phone; phoneEl.href = 'tel:' + (ct.phone||'').replace(/\s/g,''); }
+      const emailEl = document.getElementById('cms-ct-email');
+      if (emailEl) { emailEl.textContent = ct.email; emailEl.href = 'mailto:' + (ct.email||''); }
+      const mapEl = document.getElementById('cms-ct-map');
+      if (mapEl && ct.mapEmbed) mapEl.src = ct.mapEmbed;
       cmsSet('cms-ct-times', (ct.checkin || '3:00 PM') + ' — ' + (ct.checkout || '12:00 PM'));
     }
     const gl = data.galleria;
@@ -2116,14 +2169,16 @@
     if (statEl) statEl.innerHTML = rm.items.length + ' <small>listed</small>';
 
     const ct = admGet('contact');
-    document.getElementById('adm_ct_eyebrow').value  = ct.eyebrow;
-    document.getElementById('adm_ct_title').value    = ct.title;
-    document.getElementById('adm_ct_desc').value     = ct.desc;
-    document.getElementById('adm_ds_address').value  = ct.address;
-    document.getElementById('adm_ds_phone').value    = ct.phone;
-    document.getElementById('adm_ds_email').value    = ct.email;
-    document.getElementById('adm_ds_checkin').value  = ct.checkin;
-    document.getElementById('adm_ds_checkout').value = ct.checkout;
+    document.getElementById('adm_ct_eyebrow').value    = ct.eyebrow;
+    document.getElementById('adm_ct_title').value      = ct.title;
+    document.getElementById('adm_ct_desc').value       = ct.desc;
+    document.getElementById('adm_ct_map_embed').value  = ct.mapEmbed || '';
+    document.getElementById('adm_ct_map_link').value   = ct.mapLink  || '';
+    document.getElementById('adm_ds_address').value    = ct.address;
+    document.getElementById('adm_ds_phone').value      = ct.phone;
+    document.getElementById('adm_ds_email').value      = ct.email;
+    document.getElementById('adm_ds_checkin').value    = ct.checkin;
+    document.getElementById('adm_ds_checkout').value   = ct.checkout;
 
     const gl = admGet('galleria');
     document.getElementById('adm_gl_eyebrow').value = gl.eyebrow;
@@ -2175,11 +2230,12 @@
       };
     }
     if (section === 'dovesiamo' || section === 'contattaci') {
-      const prev = data.contact || {};
       data.contact = {
         eyebrow:  document.getElementById('adm_ct_eyebrow').value,
         title:    document.getElementById('adm_ct_title').value,
         desc:     document.getElementById('adm_ct_desc').value,
+        mapEmbed: document.getElementById('adm_ct_map_embed').value.trim(),
+        mapLink:  document.getElementById('adm_ct_map_link').value.trim(),
         address:  document.getElementById('adm_ds_address').value,
         phone:    document.getElementById('adm_ds_phone').value,
         email:    document.getElementById('adm_ds_email').value,
