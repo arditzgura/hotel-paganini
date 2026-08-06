@@ -1675,16 +1675,21 @@
       const doc = await _db.collection('config').doc(key).get();
       if (!doc.exists) return null;
       const d = doc.data();
-      // Support both old format {value:'...'} and new structured format
-      return d.value !== undefined ? d.value : JSON.stringify(d);
+      // Prefer structured fields (hero/rooms/services/etc) over old {value:'...'} string
+      const { value, ...structured } = d;
+      if (Object.keys(structured).length > 0) return JSON.stringify(structured);
+      return value || null;
     } catch { return null; }
   }
 
   async function hvSet(key, value) {
     try {
       const data = JSON.parse(value);
-      // merge:true ensures each section save doesn't overwrite other sections
-      await _db.collection('config').doc(key).set(data, { merge: true });
+      // Remove old 'value' string field, save structured data with merge
+      await _db.collection('config').doc(key).set(
+        { ...data, value: firebase.firestore.FieldValue.delete() },
+        { merge: true }
+      );
     } catch(e) { console.error('hvSet error:', e); }
   }
 
