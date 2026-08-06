@@ -2084,23 +2084,20 @@
   }
 
   async function admHandleRoomPhotoUpload(fileInput, i, j) {
-    const file = fileInput.files[0]; if (!file) return;
-    const thumbEl = document.getElementById(`adm_rm_thumb_${i}_${j}`);
-    const inputEl = document.getElementById(`adm_rm_photo_${i}_${j}`);
-    const tmp = URL.createObjectURL(file);
-    if (thumbEl) thumbEl.src = tmp;
-    const blob = await admCompress(file);
-    const path = `hotel/room-${i}-photo-${j}-${Date.now()}.jpg`;
-    const publicUrl = await hvUploadImg(new File([blob], path, {type:'image/jpeg'}), path);
-    URL.revokeObjectURL(tmp);
-    const finalUrl = publicUrl || await new Promise(r => {
-      const fr = new FileReader();
-      fr.onload = e => r(e.target.result);
-      fr.readAsDataURL(blob);
-    });
-    if (inputEl) inputEl.value = finalUrl;
-    if (thumbEl) thumbEl.src = finalUrl;
-    admRoomsData[i].photos[j] = finalUrl;
+    const files = Array.from(fileInput.files); if (!files.length) return;
+    admCollectRooms();
+    for (let k = 0; k < files.length; k++) {
+      const slotJ = j + k;
+      if (slotJ >= admRoomsData[i].photos.length) admRoomsData[i].photos.push('');
+      const blob = await admCompress(files[k]);
+      const path = `hotel/room-${i}-photo-${slotJ}-${Date.now()}.jpg`;
+      const publicUrl = await hvUploadImg(new File([blob], path, {type:'image/jpeg'}), path);
+      const finalUrl = publicUrl || await new Promise(r => {
+        const fr = new FileReader(); fr.onload = e => r(e.target.result); fr.readAsDataURL(blob);
+      });
+      admRoomsData[i].photos[slotJ] = finalUrl;
+    }
+    admRenderRooms(admRoomsData);
   }
 
   // ── Render room items in admin ──
@@ -2136,7 +2133,7 @@
                 <button type="button" class="adm-btn-upload" onclick="admTriggerUpload('adm_rm_pf_${i}_${j}')" title="Upload">
                   ${upSvg}Upload
                 </button>
-                <input class="adm-file-hidden" type="file" id="adm_rm_pf_${i}_${j}" accept="image/*"
+                <input class="adm-file-hidden" type="file" id="adm_rm_pf_${i}_${j}" accept="image/*" multiple
                   onchange="admHandleRoomPhotoUpload(this,${i},${j})" />
                 <button type="button" class="adm-btn-del-photo" onclick="admDeleteRoomPhoto(${i},${j})" title="Remove photo">&#x2715;</button>
               </div>`).join('')}
@@ -2303,7 +2300,7 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
               Carica
             </button>
-            <input class="adm-file-hidden" type="file" id="adm_gl_photo_f_${j}" accept="image/*"
+            <input class="adm-file-hidden" type="file" id="adm_gl_photo_f_${j}" accept="image/*" multiple
                    onchange="admHandleGalleryPhotoUpload(this,${j})" />
           </div>
           <img class="adm-img-preview" id="adm_gl_photo_p_${j}" src="${esc(url)}" alt="" />
@@ -2330,22 +2327,20 @@
   }
 
   async function admHandleGalleryPhotoUpload(input, j) {
-    const file = input.files[0]; if (!file) return;
-    const previewEl = document.getElementById(`adm_gl_photo_p_${j}`);
-    const inputEl   = document.getElementById(`adm_gl_photo_${j}`);
-    const tmp = URL.createObjectURL(file);
-    if (previewEl) previewEl.src = tmp;
-    const blob = await admCompress(file);
-    const path = `hotel/gallery-${j}-${Date.now()}.jpg`;
-    const publicUrl = await hvUploadImg(new File([blob], path, {type:'image/jpeg'}), path);
-    URL.revokeObjectURL(tmp);
-    const finalUrl = publicUrl || await new Promise(r => {
-      const fr = new FileReader(); fr.onload = e => r(e.target.result); fr.readAsDataURL(blob);
-    });
-    if (inputEl) inputEl.value = finalUrl;
-    if (previewEl) previewEl.src = finalUrl;
+    const files = Array.from(input.files); if (!files.length) return;
     admCollectGallery();
-    admGalleryData[j] = finalUrl;
+    for (let k = 0; k < files.length; k++) {
+      const slotJ = j + k;
+      if (slotJ >= admGalleryData.length) admGalleryData.push('');
+      const blob = await admCompress(files[k]);
+      const path = `hotel/gallery-${slotJ}-${Date.now()}.jpg`;
+      const publicUrl = await hvUploadImg(new File([blob], path, {type:'image/jpeg'}), path);
+      const finalUrl = publicUrl || await new Promise(r => {
+        const fr = new FileReader(); fr.onload = e => r(e.target.result); fr.readAsDataURL(blob);
+      });
+      admGalleryData[slotJ] = finalUrl;
+    }
+    admRenderGalleryAdmin(admGalleryData);
   }
 
   function admInitDash() {
