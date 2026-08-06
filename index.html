@@ -1712,11 +1712,23 @@
 
   async function admSaveData(data) {
     const json = JSON.stringify(data);
+    // Strip base64 images before saving to localStorage (keep only Supabase URLs)
+    function stripBase64(obj) {
+      if (typeof obj === 'string') return obj.startsWith('data:') ? '' : obj;
+      if (Array.isArray(obj)) return obj.map(stripBase64);
+      if (obj && typeof obj === 'object') {
+        const out = {};
+        for (const k in obj) out[k] = stripBase64(obj[k]);
+        return out;
+      }
+      return obj;
+    }
     try {
-      localStorage.setItem('hv_content', json);
+      localStorage.removeItem('hv_content');
+      const localJson = JSON.stringify(stripBase64(data));
+      localStorage.setItem('hv_content', localJson);
       localStorage.setItem('hv_saved', new Date().toLocaleString());
-    } catch { alert('Memoria locale piena — salvataggio su Supabase.'); }
-    // Push to Hotel Veizi Supabase project
+    } catch { /* localStorage full, only Supabase will have data */ }
     await hvSet(HV_KEY_NAME, json);
   }
   function admGet(section) {
@@ -2341,6 +2353,7 @@
       admGalleryData[slotJ] = finalUrl;
     }
     admRenderGalleryAdmin(admGalleryData);
+    admSave('galleria');
   }
 
   function admInitDash() {
