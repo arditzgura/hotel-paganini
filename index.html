@@ -1673,13 +1673,18 @@
   async function hvGet(key) {
     try {
       const doc = await _db.collection('config').doc(key).get();
-      return doc.exists ? doc.data().value : null;
+      if (!doc.exists) return null;
+      const d = doc.data();
+      // Support both old format {value:'...'} and new structured format
+      return d.value !== undefined ? d.value : JSON.stringify(d);
     } catch { return null; }
   }
 
   async function hvSet(key, value) {
     try {
-      await _db.collection('config').doc(key).set({ value });
+      const data = JSON.parse(value);
+      // merge:true ensures each section save doesn't overwrite other sections
+      await _db.collection('config').doc(key).set(data, { merge: true });
     } catch(e) { console.error('hvSet error:', e); }
   }
 
