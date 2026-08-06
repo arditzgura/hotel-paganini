@@ -1136,10 +1136,6 @@
           <label class="form-label" for="room">Tipo di Camera</label>
           <select class="form-select" id="room" name="room">
             <option value="">Seleziona una camera</option>
-            <option>Suite Presidenziale</option>
-            <option>Camera Deluxe King</option>
-            <option>Junior Suite</option>
-            <option>Camera Doppia Classic</option>
           </select>
         </div>
         <div class="form-group">
@@ -1824,7 +1820,17 @@
   // Room photo registry — avoids JSON in HTML attributes
   const _roomPhotoMap = {};
 
+  function cmsUpdateRoomSelect(items) {
+    const sel = document.getElementById('room');
+    if (!sel) return;
+    const current = sel.value;
+    sel.innerHTML = '<option value="">Seleziona una camera</option>' +
+      items.filter(r => r.name).map(r => `<option value="${esc(r.name)}">${esc(r.name)}</option>`).join('');
+    if (current) sel.value = current;
+  }
+
   function cmsRenderRooms(items) {
+    cmsUpdateRoomSelect(items);
     const grid = document.getElementById('rooms-grid');
     if (!grid) return;
     grid.innerHTML = items.map((item, i) => {
