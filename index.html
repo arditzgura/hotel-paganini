@@ -960,6 +960,10 @@
       .form-submit { flex-direction: column; align-items: flex-start; }
     }
   </style>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 </head>
 <body>
 
@@ -1653,58 +1657,38 @@
     }
   };
 
-  // ── Hotel Veizi — Supabase config (isolated project) ──
-  const HV_URL = 'https://dirnsligikbxlwtcsmoj.supabase.co';
-  const HV_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpcm5zbGlnaWtieGx3dGNzbW9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1NDA5NjUsImV4cCI6MjA5MzExNjk2NX0.j2BVGx0CELPw0X3DVoRs3FNJ6wOorX3dp3l7rMpW1L8';
-  const HV_BUCKET = 'hotel-images';
-  const HV_TABLE  = 'hotel_konfigurimi';
+  // ── Firebase config ──
   const HV_KEY_NAME = 'hv_content';
+  const _fbApp = firebase.initializeApp({
+    apiKey: "AIzaSyCuNwb8CJSbLXU5U1rNXkbLGn3rO5PqyjY",
+    authDomain: "hotel-paganini-f363a.firebaseapp.com",
+    projectId: "hotel-paganini-f363a",
+    storageBucket: "hotel-paganini-f363a.firebasestorage.app",
+    messagingSenderId: "149560636349",
+    appId: "1:149560636349:web:b8f983e6e3a557dc8b18d4"
+  });
+  const _db  = firebase.firestore();
+  const _st  = firebase.storage();
 
   async function hvGet(key) {
     try {
-      const r = await fetch(`${HV_URL}/rest/v1/${HV_TABLE}?key=eq.${encodeURIComponent(key)}`, {
-        headers: { 'apikey': HV_KEY, 'Authorization': `Bearer ${HV_KEY}` }
-      });
-      const d = await r.json();
-      return d && d[0] ? d[0].value : null;
+      const doc = await _db.collection('config').doc(key).get();
+      return doc.exists ? doc.data().value : null;
     } catch { return null; }
   }
 
   async function hvSet(key, value) {
     try {
-      const check = await fetch(`${HV_URL}/rest/v1/${HV_TABLE}?key=eq.${encodeURIComponent(key)}`, {
-        headers: { 'apikey': HV_KEY, 'Authorization': `Bearer ${HV_KEY}` }
-      });
-      const existing = await check.json();
-      const method = existing && existing.length > 0 ? 'PATCH' : 'POST';
-      const url = method === 'PATCH'
-        ? `${HV_URL}/rest/v1/${HV_TABLE}?key=eq.${encodeURIComponent(key)}`
-        : `${HV_URL}/rest/v1/${HV_TABLE}`;
-      await fetch(url, {
-        method,
-        headers: {
-          'apikey': HV_KEY, 'Authorization': `Bearer ${HV_KEY}`,
-          'Content-Type': 'application/json', 'Prefer': 'return=minimal'
-        },
-        body: JSON.stringify({ key, value })
-      });
-    } catch {}
+      await _db.collection('config').doc(key).set({ value });
+    } catch(e) { console.error('hvSet error:', e); }
   }
 
   async function hvUploadImg(file, path) {
     try {
-      const encoded = path.split('/').map(encodeURIComponent).join('/');
-      const r = await fetch(`${HV_URL}/storage/v1/object/${HV_BUCKET}/${encoded}`, {
-        method: 'POST',
-        headers: {
-          'apikey': HV_KEY, 'Authorization': `Bearer ${HV_KEY}`,
-          'Content-Type': file.type || 'image/jpeg', 'x-upsert': 'true'
-        },
-        body: file
-      });
-      if (!r.ok) return null;
-      return `${HV_URL}/storage/v1/object/public/${HV_BUCKET}/${encoded}`;
-    } catch { return null; }
+      const ref = _st.ref(path);
+      await ref.put(file);
+      return await ref.getDownloadURL();
+    } catch(e) { console.error('hvUploadImg error:', e); return null; }
   }
 
   // ── Storage helpers ──
