@@ -1683,11 +1683,20 @@
     } catch(e) { console.error('hvSet error:', e); }
   }
 
+  const CL_CLOUD  = 'gycu46nk';
+  const CL_PRESET = 'hotel_paganini';
+
   async function hvUploadImg(file, path) {
     try {
-      const ref = _st.ref(path);
-      await ref.put(file);
-      return await ref.getDownloadURL();
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('upload_preset', CL_PRESET);
+      fd.append('public_id', path.replace(/\//g, '_').replace(/\.[^.]+$/, ''));
+      const r = await fetch(`https://api.cloudinary.com/v1_1/${CL_CLOUD}/image/upload`, {
+        method: 'POST', body: fd
+      });
+      const d = await r.json();
+      return d.secure_url || null;
     } catch(e) { console.error('hvUploadImg error:', e); return null; }
   }
 
