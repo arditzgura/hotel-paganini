@@ -1532,22 +1532,26 @@
     const _lb = document.getElementById('lightbox');
     const _lbImgWrap = _lb.querySelector('.lb-img-wrap');
 
+    let _lbScrollY = 0;
     function lbOpen(photos, name, startIdx) {
       const valid = photos.filter(Boolean);
       if (!valid.length) return;
       _lbPhotos = valid; _lbIdx = (startIdx || 0);
       _lbUpdate(name);
       _lb.classList.add('open');
-      // iOS: prevent body scroll without breaking lightbox scroll
+      // iOS: save scroll position, then fix body to prevent background scroll
+      _lbScrollY = window.scrollY;
       document.body.style.position = 'fixed';
+      document.body.style.top = `-${_lbScrollY}px`;
       document.body.style.width = '100%';
-      document.body.style.overflow = 'hidden';
     }
     function lbClose() {
       _lb.classList.remove('open');
       document.body.style.position = '';
+      document.body.style.top = '';
       document.body.style.width = '';
-      document.body.style.overflow = '';
+      // restore exact scroll position
+      window.scrollTo(0, _lbScrollY);
     }
     function lbPrev() { _lbIdx = (_lbIdx - 1 + _lbPhotos.length) % _lbPhotos.length; _lbUpdate(); }
     function lbNext() { _lbIdx = (_lbIdx + 1) % _lbPhotos.length; _lbUpdate(); }
