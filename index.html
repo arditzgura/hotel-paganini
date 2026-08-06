@@ -369,7 +369,7 @@
     }
     .service-img {
       width: 100%;
-      aspect-ratio: 4/3;
+      aspect-ratio: 16/9;
       object-fit: cover;
       display: block;
       background: var(--surface-gray);
@@ -1050,35 +1050,8 @@
       <h2 class="section-title" id="cms-sv-title">I Nostri Servizi</h2>
       <p class="section-desc" id="cms-sv-desc">Dalla ristorazione d'eccellenza alla spa rigenerante, ogni servizio è pensato per rendere il tuo soggiorno indimenticabile.</p>
     </div>
-    <div class="services-grid">
-
-      <div class="service-card">
-        <img class="service-img" id="cms-sv-img-0" src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=75" alt="Fine Dining" loading="lazy" />
-        <div class="service-body">
-          <div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg></div>
-          <p class="service-name" id="cms-sv-name-0">Ristorante Fine Dining</p>
-          <p class="service-desc" id="cms-sv-desc-0">Assapora menù curati dal nostro chef pluripremiato con ingredienti stagionali e prodotti locali di eccellenza.</p>
-        </div>
-      </div>
-
-      <div class="service-card">
-        <img class="service-img" id="cms-sv-img-1" src="https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800&q=75" alt="Spa & Benessere" loading="lazy" />
-        <div class="service-body">
-          <div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
-          <p class="service-name" id="cms-sv-name-1">Spa & Benessere</p>
-          <p class="service-desc" id="cms-sv-desc-1">Rilassati e rigenerati con trattamenti esclusivi, idroterapia e un centro fitness completamente attrezzato.</p>
-        </div>
-      </div>
-
-      <div class="service-card">
-        <img class="service-img" id="cms-sv-img-2" src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=75" alt="Concierge" loading="lazy" />
-        <div class="service-body">
-          <div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
-          <p class="service-name" id="cms-sv-name-2">Concierge 24/7</p>
-          <p class="service-desc" id="cms-sv-desc-2">Il nostro team dedicato è sempre disponibile per organizzare tour, trasferimenti ed esperienze personalizzate.</p>
-        </div>
-      </div>
-
+    <div class="services-grid" id="services-grid">
+      <!-- Populated by JS cmsRenderServices() -->
     </div>
   </section>
 
@@ -1343,7 +1316,8 @@
           </div>
           <div id="adm-sv-items"></div>
           <div class="adm-card" style="margin-top:0;">
-            <div class="adm-save-bar" style="padding-top:0;border-top:none;margin-top:0;">
+            <button type="button" class="adm-btn-add-room" onclick="admAddService()">+ Aggiungi Servizio</button>
+            <div class="adm-save-bar" style="border-top:none;padding-top:0;margin-top:8px;">
               <span class="adm-save-msg" id="adm-saved-services">Salvato!</span>
               <button class="adm-btn-save" onclick="admSave('services')">Salva</button>
             </div>
@@ -1768,10 +1742,7 @@
     const sv = data.services;
     if (sv) {
       cmsSet('cms-sv-eyebrow', sv.eyebrow); cmsSet('cms-sv-title', sv.title); cmsSet('cms-sv-desc', sv.desc);
-      (sv.items || []).forEach((item, i) => {
-        cmsSet(`cms-sv-name-${i}`, item.name); cmsSet(`cms-sv-desc-${i}`, item.desc);
-        cmsAttr(`cms-sv-img-${i}`, 'src', item.img);
-      });
+      cmsRenderServices(sv.items || []);
     }
     const rm = data.rooms;
     if (rm) {
@@ -1815,6 +1786,23 @@
   }
   function lbOpenGallery(i) {
     if (_galleryPhotos.length) lbOpen(_galleryPhotos, 'Galleria', i);
+  }
+
+  // ── Render services grid on the live page ──
+  function cmsRenderServices(items) {
+    const grid = document.getElementById('services-grid');
+    if (!grid) return;
+    grid.innerHTML = items.map(item => `
+      <div class="service-card">
+        <img class="service-img" src="${esc(item.img)}" alt="${esc(item.name)}" loading="lazy" />
+        <div class="service-body">
+          <div class="service-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </div>
+          <p class="service-name">${esc(item.name)}</p>
+          <p class="service-desc">${esc(item.desc)}</p>
+        </div>
+      </div>`).join('');
   }
 
   // ── Render rooms grid on the live page ──
@@ -1989,27 +1977,71 @@
   }
 
   // ── Render service items ──
+  // ── Services data (mutable working copy) ──
+  let admServicesData = [];
+
+  function admCollectServices() {
+    admServicesData.forEach((sv, i) => {
+      sv.name = document.getElementById(`adm_sv_name_${i}`)?.value ?? sv.name;
+      sv.desc = document.getElementById(`adm_sv_desc_${i}`)?.value ?? sv.desc;
+      sv.img  = document.getElementById(`adm_sv_img_${i}`)?.value  ?? sv.img;
+    });
+  }
+
   function admRenderServices(items) {
-    document.getElementById('adm-sv-items').innerHTML = items.map((item, i) => `
-      <div class="adm-card" style="margin-bottom:12px;">
-        <div class="adm-card-title">Servizio ${i+1}</div>
+    admServicesData = items.map(s => ({...s}));
+    const upSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>`;
+    document.getElementById('adm-sv-items').innerHTML = admServicesData.map((item, i) => `
+      <div class="adm-card adm-room-card" style="margin-top:0;">
+        <div class="adm-room-header">
+          <span style="font-size:12px;font-weight:600;">Servizio ${i+1}</span>
+          <button type="button" class="adm-btn-del-room" onclick="admDeleteService(${i})">✕ Rimuovi</button>
+        </div>
         <div class="adm-grid">
           <div class="adm-field"><label>Nome</label><input class="adm-input" id="adm_sv_name_${i}" type="text" value="${esc(item.name)}" /></div>
           <div class="adm-field full"><label>Descrizione</label><textarea class="adm-textarea" id="adm_sv_desc_${i}">${esc(item.desc)}</textarea></div>
           <div class="adm-field full">
-            <label>Image</label>
+            <label>Immagine</label>
             <div class="adm-img-row">
-              <input class="adm-input" id="adm_sv_img_${i}" type="text" value="${esc(item.img)}" placeholder="URL or upload…" oninput="admPreviewImg('adm_sv_img_${i}','adm_sv_imgp_${i}')" />
-              <button type="button" class="adm-btn-upload" onclick="admTriggerUpload('adm_sv_imgf_${i}')">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                Upload
-              </button>
-              <input class="adm-file-hidden" type="file" id="adm_sv_imgf_${i}" accept="image/*" onchange="admHandleUpload(this,'adm_sv_img_${i}','adm_sv_imgp_${i}','service-${i}')" />
+              <input class="adm-input" id="adm_sv_img_${i}" type="text" value="${esc(item.img)}" placeholder="URL o carica…" oninput="admPreviewImg('adm_sv_img_${i}','adm_sv_imgp_${i}')" />
+              <button type="button" class="adm-btn-upload" onclick="admTriggerUpload('adm_sv_imgf_${i}')">${upSvg} Carica</button>
+              <input class="adm-file-hidden" type="file" id="adm_sv_imgf_${i}" accept="image/*" onchange="admHandleServiceUpload(this,${i})" />
             </div>
-            <img class="adm-img-preview tall" id="adm_sv_imgp_${i}" src="${esc(item.img)}" alt="" />
+            <img class="adm-img-preview" id="adm_sv_imgp_${i}" src="${esc(item.img)}" alt="" />
           </div>
         </div>
       </div>`).join('');
+  }
+
+  function admAddService() {
+    admCollectServices();
+    admServicesData.push({ name: 'Nuovo Servizio', desc: '', img: '' });
+    admRenderServices(admServicesData);
+  }
+
+  function admDeleteService(i) {
+    admCollectServices();
+    admServicesData.splice(i, 1);
+    admRenderServices(admServicesData);
+  }
+
+  async function admHandleServiceUpload(input, i) {
+    const file = input.files[0]; if (!file) return;
+    const previewEl = document.getElementById(`adm_sv_imgp_${i}`);
+    const inputEl   = document.getElementById(`adm_sv_img_${i}`);
+    const tmp = URL.createObjectURL(file);
+    if (previewEl) previewEl.src = tmp;
+    const blob = await admCompress(file);
+    const path = `hotel/service-${i}-${Date.now()}.jpg`;
+    const publicUrl = await hvUploadImg(new File([blob], path, {type:'image/jpeg'}), path);
+    URL.revokeObjectURL(tmp);
+    const finalUrl = publicUrl || await new Promise(r => {
+      const fr = new FileReader(); fr.onload = e => r(e.target.result); fr.readAsDataURL(blob);
+    });
+    if (inputEl) inputEl.value = finalUrl;
+    if (previewEl) previewEl.src = finalUrl;
+    admCollectServices();
+    admServicesData[i].img = finalUrl;
   }
 
   // ── Rooms data (mutable working copy) ──
@@ -2178,15 +2210,12 @@
       };
     }
     if (section === 'services') {
+      admCollectServices();
       data.services = {
         eyebrow: document.getElementById('adm_sv_eyebrow').value,
         title:   document.getElementById('adm_sv_title').value,
         desc:    document.getElementById('adm_sv_desc').value,
-        items: ADM_DEFAULTS.services.items.map((_, i) => ({
-          name: document.getElementById(`adm_sv_name_${i}`).value,
-          desc: document.getElementById(`adm_sv_desc_${i}`).value,
-          img:  document.getElementById(`adm_sv_img_${i}`).value,
-        }))
+        items: admServicesData.map(s => ({ name: s.name, desc: s.desc, img: s.img }))
       };
     }
     if (section === 'rooms') {
